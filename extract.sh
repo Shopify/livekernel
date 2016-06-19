@@ -15,6 +15,7 @@ sudo cp ${tmpdir}/boot/vmlinuz* $OUTPUT/vmlinuz
 sudo cp ${tmpdir}/boot/initrd* $OUTPUT/initrd.img
 
 echo "Output is at ${OUTPUT}"
+sudo chmod a+r ${OUTPUT}/*
 sudo chown -R `whoami` ${OUTPUT}
 
 echo "Cleaning up"

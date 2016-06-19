@@ -14,9 +14,14 @@ RUN chmod +x /usr/sbin/policy-rc.d
 RUN apt-get update
 
 RUN apt-get install -y --force-yes linux-generic-lts-xenial live-boot
+RUN apt-get install -y --force-yes isc-dhcp-client
 
-ADD util/conf_net.sh /etc/initramfs-tools/scripts/local-top/
-RUN chmod +x /etc/initramfs-tools/scripts/local-top/conf_net.sh
+ADD util/conf_net.sh /etc/initramfs-tools/scripts/init-premount/
+RUN chmod +x /etc/initramfs-tools/scripts/init-premount/conf_net.sh
+
+ADD util/add_dhclient.sh /etc/initramfs-tools/hooks
+RUN chmod +x /etc/initramfs-tools/hooks/add_dhclient.sh
+
 RUN update-initramfs -u
 
 ###########################################################
@@ -32,4 +37,4 @@ RUN rm /usr/sbin/policy-rc.d
 RUN rm -rf /var/lib/apt/lists/*
 # this forces "apt-get update" in dependent images, which is also good
 
-CMD ['sleep infinity']
+CMD ['/bin/sleep infinity']
