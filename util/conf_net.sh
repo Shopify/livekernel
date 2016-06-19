@@ -25,26 +25,16 @@ get_param()
 up_device()
 {
   device=$1
+  ifconfig $device up
   dhclient -4 -v -1 $device
-  dhclient -x
+  kill $(cat /var/run/dhclient.pid)
 }
 
 up_boot_device()
 {
-  temp_mac=$(get_param BOOTIF)
+  bootif_mac=$(get_param BOOTIF)
 
-  # convert to typical mac address format by replacing "-" with ":"
-  bootif_mac=""
-  IFS='-'
-  for x in $temp_mac ; do
-    if [ -z "$bootif_mac" ]; then
-      bootif_mac="$x"
-    else
-      bootif_mac="$bootif_mac:$x"
-    fi
-  done
-  unset IFS
-
+  ls /sys/class/net
   for device in /sys/class/net/*; do
     if [ -f "$device/address" ]; then
       current_mac=$(cat "$device/address")
@@ -66,14 +56,38 @@ up_all_interfaces()
   done
 }
 
+prepare()
+{
+  # Ensure all our net modules get loaded so we can actually compare MAC addresses.
+  udevadm trigger
+  udevadm settle
+
+  # Create some files and directories dhclient-script expects
+  mkdir -p /var/lib/dhcp/
+  mkdir -p /var/run
+  mkdir -p /etc
+  touch /etc/fstab
+
+  # Splat all busybox apps out onto the FS with symblinks
+  # Needed for dhclient to use them from a bash context
+  busybox --list | while read app; do
+    busybox ln -sf /bin/busybox /sbin/$app
+  done
+
+  # Block ipconfig from running
+  cp /sbin/true /bin/ipconfig
+
+}
+
 start_networking()
 {
+  prepare
+
   if has_param BOOTIF; then
     up_boot_device
   else
     up_all_interfaces
   fi
 }
-
 
 start_networking
