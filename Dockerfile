@@ -14,6 +14,9 @@ RUN chmod +x /usr/sbin/policy-rc.d
 RUN apt-get update
 
 RUN apt-get install -y --force-yes linux-generic-lts-xenial live-boot
+
+ADD util/conf_net.sh /etc/initramfs-tools/scripts/local-top/
+RUN chmod +x /etc/initramfs-tools/scripts/local-top/conf_net.sh
 RUN update-initramfs -u
 
 ###########################################################
