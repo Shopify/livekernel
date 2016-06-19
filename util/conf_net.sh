@@ -31,7 +31,19 @@ up_device()
 
 up_boot_device()
 {
-  bootif_mac=$(get_param BOOTIF)
+  temp_mac=$(get_param BOOTIF)
+
+  # convert to typical mac address format by replacing "-" with ":"
+  bootif_mac=""
+  IFS='-'
+  for x in $temp_mac ; do
+    if [ -z "$bootif_mac" ]; then
+      bootif_mac="$x"
+    else
+      bootif_mac="$bootif_mac:$x"
+    fi
+  done
+  unset IFS
 
   for device in /sys/class/net/*; do
     if [ -f "$device/address" ]; then
