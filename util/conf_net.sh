@@ -1,6 +1,4 @@
 #!/bin/sh
-
-set -x
 set -e
  . /scripts/functions
 set +e
@@ -89,5 +87,9 @@ start_networking()
     up_all_interfaces
   fi
 }
+
+if HAS_PARAM DEBUG; then
+  set -x
+fi
 
 start_networking
