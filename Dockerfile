@@ -11,7 +11,14 @@ RUN chmod +x /usr/sbin/policy-rc.d
 
 ################ start Install packages ###################
 # Do an initial update so we have updated lists for the build
+RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get update
+
+# Install file system utilities, so they'll be included in the initramfs
+RUN apt-get install -y --force-yes \
+  lvm2 \
+  mdadm \
+  xfsprogs
 
 RUN apt-get install -y --force-yes linux-generic-lts-vivid live-boot
 RUN apt-get install -y --force-yes isc-dhcp-client

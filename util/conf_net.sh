@@ -88,7 +88,7 @@ start_networking()
   fi
 }
 
-if HAS_PARAM DEBUG; then
+if has_param DEBUG; then
   set -x
 fi
 
